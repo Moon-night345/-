@@ -1,0 +1,1 @@
+{"llm_allowed":["ask follow-up questions","translate","explain","summarize"],"llm_forbidden":["set urgency","decide emergency","decide hospital need"],"red_flags":["breathing","throat","consciousness","seizure","vomiting","eye_pain","burn"]}

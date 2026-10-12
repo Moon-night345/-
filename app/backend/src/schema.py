@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+
+class Product(BaseModel):
+    name: str | None = None
+    brand: str | None = None
+    category: str | None = None
+    barcode: str | None = None
+    manufacturer: str | None = None
+
+
+class Hazard(BaseModel):
+    type: str
+    severity: Literal["low", "medium", "high", "critical"]
+    evidence: str
+    confidence: float = Field(ge=0, le=1)
+
+
+class Ingredient(BaseModel):
+    name: str
+    source: Literal["label", "database", "inferred"]
+    confidence: float = Field(ge=0, le=1)
+
+
+class FirstAid(BaseModel):
+    ingestion: str | None = None
+    inhalation: str | None = None
+    eye_contact: str | None = None
+    skin_contact: str | None = None
+
+
+class ChemicalAnalysis(BaseModel):
+    product: Product
+    visual_evidence: list[str] = Field(default_factory=list)
+    hazards: list[Hazard] = Field(default_factory=list)
+    ingredients: list[Ingredient] = Field(default_factory=list)
+    signal_words: list[str] = Field(default_factory=list)
+    safe_storage: list[str] = Field(default_factory=list)
+    do_not_mix_with: list[str] = Field(default_factory=list)
+    first_aid: FirstAid = Field(default_factory=FirstAid)
+    uncertainties: list[str] = Field(default_factory=list)
+    needs_more_images: list[str] = Field(default_factory=list)
+    risk_level: Literal["unknown", "low", "medium", "high", "critical"]
+    summary: str
+
+
+SYSTEM_PROMPT = """你是家庭化学品安全识别助手。请观察图片并只输出一个符合下列结构的 JSON 对象，字段名、层级和枚举值不得改变：
+{"product":{"name":null,"brand":null,"category":null,"barcode":null,"manufacturer":null},"visual_evidence":[],"hazards":[],"ingredients":[],"signal_words":[],"safe_storage":[],"do_not_mix_with":[],"first_aid":{"ingestion":null,"inhalation":null,"eye_contact":null,"skin_contact":null},"uncertainties":[],"needs_more_images":[],"risk_level":"unknown","summary":"string"}
+规则：
+1. 只陈述图片中可见、标签可读或资料明确支持的事实，不要猜测不可见成分或浓度。
+2. 无法确认时写入 uncertainties，并在 needs_more_images 中说明还需要拍摄的位置。
+3. 风险宁可保守召回，但证据、置信度和不确定性必须分开表达。
+4. 不提供危险配制、规避监管或伤害他人的步骤。
+5. 急性暴露建议联系当地急救/中毒咨询机构；不要把输出称为医疗诊断。
+6. 输出必须是合法 JSON，不要使用 Markdown 代码块，不得增加结构中不存在的顶层字段。
+7. 如果图片是玩具、食品包装或装修材料：product.category 分别写“玩具”“食品”或“装修材料”；只陈述标签上可见的文字与警示；risk_level 用 unknown，除非标签上有明确危险品信号词（DANGER / 有毒 / 腐蚀等）；summary 必须写明“这不是实验室检测”，并给出与家庭化学品的存放关系（远离食品、远离婴幼儿、勿与清洁剂同柜）。禁止输出“合格”“不符合国标”等检测结论。如果图片与居家物品完全无关（风景、人物、屏幕截图），product.category 写“非家庭化学品”，risk_level 写“unknown”，并说明不能进行产品风险判断。
+8. 不得推测图片未确认的具体浓度、毒性等级、医疗剂量或成分；无法确认时必须写入 uncertainties，并使用英文原句 “Not confirmed from the available image.”。
+9. hazards 每项只能包含 type、severity、evidence、confidence，severity 只能取 low、medium、high、critical；ingredients 每项只能包含 name、source、confidence，source 只能取 label、database、inferred。"""
+
+
+USER_PROMPT = """识别这张居家物品照片（家庭化学品、玩具、食品包装或装修材料均可），提取标签可见信息。化学品按原规则判断风险、储存与禁忌混用；玩具/食品/装修材料只读标签、给存放建议，不做检测合格结论。严格按训练数据中的 JSON 字段输出。"""
+
+
+class ExposureCase(BaseModel):
+    case_id: str | None = None
+    lang: Literal["zh", "en"] = "en"
+    mode: Literal["self", "caregiver"] = "self"
+    answers: dict = Field(default_factory=dict)
+    analysis: dict | None = None
+
+class TriageAnswer(BaseModel):
+    case_id: str
+    question_id: str
+    answer: str | list[str]
+    analysis: dict | None = None
+
+class TriageNavigationRequest(BaseModel):
+    case_id: str
+    lang: Literal["zh", "en"] = "en"

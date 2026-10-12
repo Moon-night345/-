@@ -1,0 +1,42 @@
+{
+  "event": {
+    "name": "Tencent Cloud AI CAN DO IT Hackathon Singapore 2026",
+    "region": "Singapore",
+    "format": "Online / Global",
+    "submission_deadline": "2026-10-16",
+    "demo_day": "2026-11-03",
+    "official_registration_url": "https://qdrl.qq.com/65xN1yft",
+    "prize_context": {
+      "first_prize": "SGD 10,000",
+      "total_prize_pool": "SGD 17,000"
+    },
+    "industry_challenge_context": [
+      "DBS",
+      "Keppel",
+      "NTU LKCMedicine",
+      "Aspire",
+      "Ryde"
+    ]
+  },
+  "selected_track": {
+    "name": "Healthcare Challenge 1: AI Grandma Knows Best",
+    "solution_positioning": "Chemical exposure safety agent for older adults and family caregivers",
+    "demo_locale": "Singapore",
+    "safety_boundary": "Emergency escalation is determined by deterministic backend rules; the LLM cannot override it."
+  },
+  "submission_readiness": {
+    "before_2026_10_16": [
+      "Complete team and contact fields on the official form",
+      "Confirm the selected Healthcare Challenge 1 track",
+      "Run the English triage and Singapore navigation demo",
+      "Re-export the final PDF, PPTX and video with the same positioning"
+    ],
+    "demo_day_2026_11_03": [
+      "Show package recognition",
+      "Simulate an older-adult ingestion or inhalation case",
+      "Show multi-turn questions and hard-rule emergency escalation",
+      "Show Singapore 995 / hospital ED / pharmacist navigation",
+      "Explain the four-agent boundary and WorkBuddy adapter"
+    ]
+  }
+}

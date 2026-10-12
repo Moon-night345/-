@@ -1,0 +1,2 @@
+def build_workbuddy_payload(case,triage,navigation): return {"protocol":"bottlesafe.healthcare.v1","case_id":case.get("case_id"),"language":case.get("lang","en"),"agents":["recognition","triage","navigation","review"],"triage":triage,"navigation":navigation,"safety_boundary":"Triage is deterministic and cannot be overwritten by an LLM."}
+def invoke_workbuddy(*,case,triage,navigation): return {"provider":"tencent_workbuddy","mode":"adapter_payload_only","payload":build_workbuddy_payload(case,triage,navigation)}
