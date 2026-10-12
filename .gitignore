@@ -19,6 +19,7 @@ build/
 
 # Runtime data
 *.db
+*.sqlite3
 *.log
 *.pid
 data/uploads/
